@@ -1,7 +1,13 @@
 
 from tkinter import *
-from tkinter import font
+import tkinter as tk
 import csv
+
+# helper functions
+def check_empty(s: StringVar):
+    if s.get() == "":
+        return True
+    return False
 
 # def read_data():
 #     table = []
@@ -42,13 +48,15 @@ import csv
 window = Tk()
 window.title("Start Menu")
 window.geometry('200x200')
+password = StringVar(window)
+id = StringVar(window)
 
 # fonts
 # style1 = font.Font(size=25)
 # style2 = font.Font(size=12)
 
 # modes
-def mode_chooser(id: str, password: str):
+def mode_chooser():
     with open("Users.csv", "r") as users:
         curr_user_id = None
         curr_user_pass = None
@@ -67,14 +75,13 @@ def mode_chooser(id: str, password: str):
                 else:
                     print("incorrect password")
                     break
-        if curr_user_id is None:
-            print("No user found, ask an employee to create one")
+    if curr_user_id is None:
+        print("No user found, ask an employee to create one")
 
 
 def sign_in_menu():
     window.title("Sign In")
-    id = StringVar(window)
-    password = StringVar(window)
+
     # initial frame
     input_frame = LabelFrame(window, text="Sign in")
     input_frame.grid(row=0, column=0)
@@ -91,9 +98,17 @@ def sign_in_menu():
     password_entry = Entry(input_frame, textvariable=password)
     password_entry.grid(row=1, column=1)
 
+    # valid entry label
+    valid_label = Label(input_frame)
+
     # sign in button
-    sign_in_button = Button(input_frame, text="Sign in", command=mode_chooser(id.get(), password.get()))
+    sign_in_button = Button(input_frame, text="Sign in", command=mode_chooser)
+    sign_in_button["state"] = "disabled"
     sign_in_button.grid(row=2, column=1)
+    tk.update_idletasks()
+    tk.update()
+    if not(check_empty(password)) and not(check_empty(id)):
+        sign_in_button["state"] = "enabled"
 
 # first_name_value = StringVar(window)
 # last_name_value = StringVar(window)
