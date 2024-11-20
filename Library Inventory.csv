@@ -1,11 +1,20 @@
-Book/Game Name,Total Copies,Copies Available,Copies Checked out
-A Game of Thrones,2,2,0
-A Clash of Kings,2,2,0
-A Storm of Swords,2,2,0
-A Feast of Crows,2,2,0
-A Dance of Dragons,2,2,0
-A Court of Thorns and Roses,3,3,0
-A Court of Mist and Fury,4,4,0
-A Court of Wings and Ruin,4,4,0
-A Court of Frost and Starlight,2,2,0
-A Court of Silver Flames,4,4,0
+Book/Game Name,Author Last Name,Author First Name,Total Copies,Copies Available,Copies Checked Out
+A Game of Thrones,Martin,George R. R.,2,2,0
+A Clash of Kings,Martin,George R. R.,2,2,0
+A Storm of Swords,Martin,George R. R.,2,2,0
+A Feast of Crows,Martin,George R. R.,2,2,0
+A Dance of Dragons,Martin,George R. R.,2,2,0
+A Court of Thorns and Roses,Maas, Sarah J.,3,3,0
+A Court of Mist and Fury,Maas, Sarah J.,4,4,0
+A Court of Wings and Ruin,Maas, Sarah J.,4,4,0
+A Court of Frost and Starlight,Maas, Sarah J.,2,2,0
+A Court of Silver Flames,Maas, Sarah J.,4,4,0
+Caraval,Garber,Stephanie,3,3,0
+Legendary,Garber,Stephanie,2,2,0
+Finale,Garber,Stephanie,3,3,0
+Once Upon a Broken Heart,Garber,Stephanie,4,4,0
+The Ballad of Never After,Garber,Stephanie,3,3,0
+A Curse for True Love,Garber,Stephanie,4,4,0
+The Hunger Games,Collins,Suzanne,2,2,0
+Catching Fire,Collins,Suzanne,2,2,0
+Mockingjay,Collins,Suzanne,2,2,0
