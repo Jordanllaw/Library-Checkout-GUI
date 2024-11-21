@@ -11,11 +11,13 @@ id = StringVar(window)
 
 # modes
 def customer_screen():
-    customer_frame = Frame(window, width=500, height=700, bg="yellow")
+    window.minsize(width=500, height=500)
+    customer_frame = Frame(window, width=500, height=500, bg="yellow")
     customer_frame.grid(row=0, column=0)
 
 def employee_screen():
-    employee_frame = Frame(window, width=500, height=700, bg="red")
+    window.minsize(width=500, height=500)
+    employee_frame = Frame(window, width=500, height=500, bg="red")
     employee_frame.grid(row=0, column=0)
 
 def sign_in_menu():
