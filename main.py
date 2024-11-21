@@ -18,8 +18,6 @@ def read_data():
     data_frame = LabelFrame(window, text="Books in our Library")
     data_frame.grid(row=6, column=0)
 
-    print("FSDLKFJSDLKFJKLSDJFKLDJFLKDSJFKLJDSKLFJDLKFJLKSD")
-
     for widget in data_frame.winfo_children():
         widget.destroy()
     # Now table is the csv file in nested-list form
@@ -65,39 +63,75 @@ def main():
     show_button = Button(input_frame, text='Show Inventory', command=read_data)
     show_button.grid(row=3, column=0)
 
-def read_customer_inventory():
+
+def customer():
+    # user inventory
     inventory = []
-    with open('Customer Inventory Template', mode='r') as file:
+    late_fees = 0
+    item_count = 0
+    with open('Customer Inventory Template.csv', mode='r') as file:
+        first_line = file.readline()
+        categories = ''
+        temp_array = []
+
+        # adding : to the end of each category
+        for i in range(len(first_line)):
+            if first_line[i] == ',' or i == len(first_line) - 1:
+                categories += ':'
+                temp_array.append(categories)
+                categories = ''
+            else:
+                categories += first_line[i]
+
+        # adding the first line to the inventory array
+        inventory.append(temp_array)
+
+        # adding the rest of the lines to the inventory array
         csv_file = csv.reader(file)
         for line in csv_file:
+            if int(line[1]) < 0 and line[2] == "Book":
+                late_fees += 0.2 * int(line[1])
+            if int(line[1]) < 0 and line[2] == "Game":
+                late_fees += 0.3 * int(line[1])
             inventory.append(line)
+            item_count += 1
     file.close()
 
     # Initialize the data frame
     data_frame = LabelFrame(window, text="Currently Checked Out")
-    data_frame.grid(row=6, column=0)
+    data_frame.grid(row=6, column=1)
 
     for widget in data_frame.winfo_children():
         widget.destroy()
     # Now table is the csv file in nested-list form
-    for row_num in range(len(inventory)):
-        for column_num in range(len(inventory[row_num])):
-            cell_value = inventory[row_num][column_num]
+    for r in range(len(inventory)):
+        for c in range(len(inventory[r])):
+            cell_value = inventory[r][c]
             cell_label = Label(data_frame, text=cell_value)
-            cell_label.grid(row=row_num, column=column_num)
+            cell_label.grid(row=r, column=c)
 
-
-def customer():
-    customer_name = StringVar(window)
-    customer_id = StringVar(window)
-    input_frame = LabelFrame(window, text="Check Items")
+    # main checked out items
+    input_frame = LabelFrame(window, text="Information")
     input_frame.grid(row=0, column=0)
-    first_name_label = Label(input_frame, text="Book Title")
+
+    first_name_label = Label(input_frame, text="Username: ")
     first_name_label.grid(row=0, column=0)
-    submit_button = Button(input_frame, text='Checkout', command=read_customer_inventory)
-    submit_button.grid(row=3, column=1)
-    show_button = Button(input_frame, text='Show Inventory', command=read_customer_inventory)
-    show_button.grid(row=3, column=0)
+    last_name_label = Label(input_frame, text="ID: ")
+    last_name_label.grid(row=1, column=0)
+    last_name_label = Label(input_frame, text="Total Items: " + str(item_count))
+    last_name_label.grid(row=3, column=0)
+
+    # late fees
+    input_frame = LabelFrame(window, text="Late Fees")
+    input_frame.grid(row=0, column=1)
+
+    first_name_label = Label(input_frame, text="Fees Owed: $" + str(abs(late_fees)) + '0')
+    first_name_label.grid(row=0, column=1)
+    last_name_label = Label(input_frame, text="(Late books: $0.20/day")
+    last_name_label.grid(row=1, column=1)
+    last_name_label = Label(input_frame, text="(Late games: $0.30/day")
+    last_name_label.grid(row=2, column=1)
+
 
 customer()
 mainloop()
