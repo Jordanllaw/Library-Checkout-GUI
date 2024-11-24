@@ -5,8 +5,18 @@ import csv
 window = Tk()
 window.title("Start Menu")
 window.geometry('200x200')
+
+# variables
 password = StringVar(window)
 id = StringVar(window)
+
+add_password = StringVar(window) 
+add_id = StringVar(window)
+
+book_name = StringVar(window)
+author_last_name = StringVar(window)
+author_first_name = StringVar(window)
+total_copies = StringVar(window)
 
 # modes
 def customer_screen():
@@ -81,10 +91,74 @@ def customer_screen():
     last_name_label = Label(input_frame, text="(Late games: $0.30/day)")
     last_name_label.grid(row=2, column=1)
 
+    # book name label and entry
+    book_name_label = Label(customer_frame, text="Book Name")
+    book_name_label.grid(row=3, column=0)
+    book_name_entry = Entry(customer_frame, textvariable=book_name)
+    book_name_entry.grid(row=4, column=0)
+
+    # check out button
+    check_out_button = Button(customer_frame, text="Check Out", command=check_out_book)
+    check_out_button.grid(row=5, column=0)
+
+    # return button
+    return_button = Button(customer_frame, text="Return", command=return_book)
+    return_button.grid(row=6, column=0)
+
+    # checkout and return entry labels
+    global checkout_and_return_label
+    checkout_and_return_label = Label(customer_frame)
+    checkout_and_return_label.grid(row=7, column=0)
+
 def employee_screen():
     window.minsize(width=500, height=500)
     employee_frame = Frame(window, width=500, height=500, bg="red")
     employee_frame.grid(row=0, column=0)
+
+        # book details label and entry
+    book_name_label = Label(employee_frame, text="Book Name")
+    book_name_label.grid(row=0, column=0)
+    book_name_entry = Entry(employee_frame, textvariable=book_name)
+    book_name_entry.grid(row=0, column=1)
+
+    author_last_name_label = Label(employee_frame, text="Author Last Name")
+    author_last_name_label.grid(row=1, column=0)
+    author_last_name_entry = Entry(employee_frame, textvariable=author_last_name)
+    author_last_name_entry.grid(row=1, column=1)
+
+    author_first_name_label = Label(employee_frame, text="Author First Name")
+    author_first_name_label.grid(row=2, column=0)
+    author_first_name_entry = Entry(employee_frame, textvariable=author_first_name)
+    author_first_name_entry.grid(row=2, column=1)
+
+    total_copies_label = Label(employee_frame, text="Total Copies")
+    total_copies_label.grid(row=3, column=0)
+    total_copies_entry = Entry(employee_frame, textvariable=total_copies)
+    total_copies_entry.grid(row=3, column=1)
+
+    # add book button
+    add_book_button = Button(employee_frame, text="Add book to stock", command=add_book)
+    add_book_button.grid(row=4, column=1)
+
+    # employee details label and entry
+    id_label = Label(employee_frame, text="ID")
+    id_label.grid(row=5, column=0)
+    id_entry = Entry(employee_frame, textvariable=add_id)
+    id_entry.grid(row=5, column=1)
+    
+    password_label = Label(employee_frame, text="Password")
+    password_label.grid(row=6, column=0)
+    password_entry = Entry(employee_frame, textvariable=add_password)
+    password_entry.grid(row=6, column=1)
+
+    # add employee button
+    add_employee_button = Button(employee_frame, text="Add employee to database", command=add_employee)
+    add_employee_button.grid(row=7, column=1)
+
+    # add book and employee entry labels
+    global add_book_and_employee_label
+    add_book_and_employee_label = Label(employee_frame)
+    add_book_and_employee_label.grid(row=8, column=1)
 
 def sign_in_menu():
     # initial frame
@@ -190,6 +264,105 @@ def write_data():
     #     writer = csv.writer(file)
     #     writer.writerows(table)
     # file.close()
+
+def check_out_book():
+    inventory = []
+    with open("Library Inventory.csv", mode="r", newline='') as books:
+        stock = csv.reader(books)
+        for line in stock:
+            inventory.append(line)
+    books.close()
+
+    users_inventory = []
+    with open("Customer Inventory.csv", mode="r", newline='') as books:
+        stock = csv.reader(books)
+        for line in stock:
+            users_inventory.append(line)
+    books.close()
+
+    for row in users_inventory:
+        if row[0] == book_name.get() and row[1] == id.get():
+            print("You already have this book checked out")
+            checkout_and_return_label.config(text="You already have this book checked out")
+            return
+
+    for row in inventory:
+        if row[0] == book_name.get():
+            if int(row[4]) > 0:
+                row[4] = str(int(row[4]) - 1)
+                row[5] = str(int(row[5]) + 1)
+                print("Book checked out successfully")
+                checkout_and_return_label.config(text="Book checked out successfully")
+                break
+            else:
+                print("No copies available for checkout")
+                checkout_and_return_label.config(text="No copies available for checkout")
+                return
+
+    with open("Library Inventory.csv", mode="w", newline='') as books:
+        stock = csv.writer(books)
+        stock.writerows(inventory)
+    books.close()
+
+def return_book():
+    inventory = []
+    with open("Library Inventory.csv", mode="r", newline='') as books:
+        stock = csv.reader(books)
+        for line in stock:
+            inventory.append(line)
+    books.close()
+
+    for row in inventory:
+        if row[0] == book_name.get():
+            if int(row[5]) > 0:
+                row[4] = str(int(row[4]) + 1)
+                row[5] = str(int(row[5]) - 1)
+                print("Book returned successfully")
+                checkout_and_return_label.config(text="Book returned successfully")
+                break
+            else:
+                print("No copies of this book are currently checked out")
+                checkout_and_return_label.config(text="No copies of this book are currently checked out")
+                return
+
+    with open("Library Inventory.csv", mode="w", newline='') as books:
+        stock = csv.writer(books)
+        stock.writerows(inventory)
+    books.close()
+
+def add_book():
+    inventory = []
+    with open("Library Inventory.csv", mode="r", newline='') as books:
+        stock = csv.reader(books)
+        for line in stock:
+            inventory.append(line)
+    books.close()
+
+    inventory.append([book_name.get(), author_last_name.get(), author_first_name.get(), total_copies.get(), total_copies.get(), 0])
+    print("Book added")
+    add_book_and_employee_label.config(text="Book added")
+
+    with open("Library Inventory.csv", mode="w", newline='') as books:
+        stock = csv.writer(books)
+        stock.writerows(inventory)
+    books.close()
+
+def add_employee():
+    table = []
+    with open("Users.csv", mode="r", newline='') as users:
+        accounts = csv.reader(users)
+        for line in accounts:
+            table.append(line)
+    users.close()
+
+    table.append([id.get(), password.get(), "employee"])
+    print("Employee added")
+    add_book_and_employee_label.config(text="Employee added")
+
+    with open("Users.csv", mode="w", newline='') as users:
+        accounts = csv.writer(users)
+        accounts.writerows(table)
+    users.close()
 
 sign_in_menu()
 window.mainloop()
