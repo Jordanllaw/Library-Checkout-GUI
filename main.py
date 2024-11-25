@@ -12,20 +12,24 @@ id = StringVar(window)
 
 add_password = StringVar(window) 
 add_id = StringVar(window)
+add_book_name = StringVar(window)
+add_book_author = StringVar(window)
+add_total_copies = StringVar(window)
 
 book_name = StringVar(window)
-author_last_name = StringVar(window)
-author_first_name = StringVar(window)
-total_copies = StringVar(window)
+# author_last_name = StringVar(window)
+# author_first_name = StringVar(window)
+# total_copies = StringVar(window)
 
 # frames
-customer_frame = Frame(window, width=500, height=500)
+customer_frame = Frame(window, width=1000, height=1000)
+employee_frame = Frame(window, width=1000, height=1000)
 
 # modes
 def customer_screen():
-    window.minsize(width=500, height=500)
+    window.minsize(width=1000, height=1000)
     global customer_frame
-    customer_frame = Frame(window, width=500, height=500)
+    customer_frame = Frame(window, width=1000, height=1000)
     customer_frame.grid(row=0, column=0)
 
     # user inventory
@@ -58,11 +62,10 @@ def customer_screen():
                 late_fees += 0.3 * int(line[1])
             inventory.append(line)
             item_count += 1
-    file.close()
 
     # Initialize the data frame
     data_frame = LabelFrame(customer_frame, text="Currently Checked Out")
-    data_frame.grid(row=6, column=1)
+    data_frame.grid(row=7, column=1)
 
     for widget in data_frame.winfo_children():
         widget.destroy()
@@ -71,6 +74,24 @@ def customer_screen():
         for c in range(len(inventory[r])):
             cell_value = inventory[r][c]
             cell_label = Label(data_frame, text=cell_value)
+            cell_label.grid(row=r, column=c)
+
+    # library inventory
+    library_inventory = []
+    with open("Library Inventory.csv", mode="r") as file:
+        csv_file = csv.reader(file)
+        for line in csv_file:
+            library_inventory.append(line)
+
+    data_frame2 = LabelFrame(customer_frame, text="Current Library Inventory")
+    data_frame2.grid(row=7, column=2)
+
+    for widget in data_frame2.winfo_children():
+        widget.destroy()
+    for r in range(len(library_inventory)):
+        for c in range(len(library_inventory[r])):
+            cell_value = library_inventory[r][c]
+            cell_label = Label(data_frame2, text=cell_value)
             cell_label.grid(row=r, column=c)
 
     # main checked out items
@@ -115,58 +136,165 @@ def customer_screen():
     checkout_and_return_label.grid(row=7, column=0)
 
 def employee_screen():
-    window.minsize(width=500, height=500)
-    employee_frame = Frame(window, width=500, height=500, bg="red")
+    window.minsize(width=1000, height=1000)
+    global employee_frame
+    employee_frame = Frame(window, width=1000, height=1000)
     employee_frame.grid(row=0, column=0)
 
-        # book details label and entry
+    # user inventory
+    inventory = []
+    late_fees = 0
+    item_count = 0
+    with open(str(id.get()) + ' Customer Inventory.csv', mode='r') as file:
+        first_line = file.readline()
+        categories = ''
+        temp_array = []
+
+        # adding : to the end of each category
+        for i in range(len(first_line)):
+            if first_line[i] == ',' or i == len(first_line) - 1:
+                categories += ':'
+                temp_array.append(categories)
+                categories = ''
+            else:
+                categories += first_line[i]
+
+        # adding the first line to the inventory array
+        inventory.append(temp_array)
+
+        # adding the rest of the lines to the inventory array
+        csv_file = csv.reader(file)
+        for line in csv_file:
+            if int(line[1]) < 0 and line[2] == "Book":
+                late_fees += 0.2 * int(line[1])
+            if int(line[1]) < 0 and line[2] == "Game":
+                late_fees += 0.3 * int(line[1])
+            inventory.append(line)
+            item_count += 1
+
+    # Initialize the data frame
+    data_frame = LabelFrame(employee_frame, text="Currently Checked Out")
+    data_frame.grid(row=6, column=1)
+
+    for widget in data_frame.winfo_children():
+        widget.destroy()
+    # Now table is the csv file in nested-list form
+    for r in range(len(inventory)):
+        for c in range(len(inventory[r])):
+            cell_value = inventory[r][c]
+            cell_label = Label(data_frame, text=cell_value)
+            cell_label.grid(row=r, column=c)
+
+    # library inventory
+    library_inventory = []
+    with open("Library Inventory.csv", mode="r") as file:
+        csv_file = csv.reader(file)
+        for line in csv_file:
+            library_inventory.append(line)
+
+    data_frame2 = LabelFrame(customer_frame, text="Current Library Inventory")
+    data_frame2.grid(row=7, column=2)
+
+    for widget in data_frame2.winfo_children():
+        widget.destroy()
+    for r in range(len(library_inventory)):
+        for c in range(len(library_inventory[r])):
+            cell_value = library_inventory[r][c]
+            cell_label = Label(data_frame2, text=cell_value)
+            cell_label.grid(row=r, column=c)
+
+    # main checked out items
+    input_frame = LabelFrame(employee_frame, text="Information")
+    input_frame.grid(row=0, column=0)
+
+    # first_name_label = Label(input_frame, text="Username: " + str(id))
+    # first_name_label.grid(row=0, column=0)
+    last_name_label = Label(input_frame, text="ID: " + id.get())
+    last_name_label.grid(row=0, column=0)
+    last_name_label = Label(input_frame, text="Total Items: " + str(item_count))
+    last_name_label.grid(row=3, column=0)
+
+    # late fees
+    input_frame = LabelFrame(employee_frame, text="Late Fees")
+    input_frame.grid(row=0, column=1)
+
+    first_name_label = Label(input_frame, text="Fees Owed: $" + str(abs(late_fees)) + '0')
+    first_name_label.grid(row=0, column=1)
+    last_name_label = Label(input_frame, text="(Late items: $0.20/day)")
+    last_name_label.grid(row=1, column=1)
+    last_name_label = Label(input_frame, text="(Late games: $0.30/day)")
+    last_name_label.grid(row=2, column=1)
+
+    # book name label and entry
     book_name_label = Label(employee_frame, text="Book Name")
-    book_name_label.grid(row=0, column=0)
+    book_name_label.grid(row=3, column=0)
     book_name_entry = Entry(employee_frame, textvariable=book_name)
-    book_name_entry.grid(row=0, column=1)
+    book_name_entry.grid(row=4, column=0)
 
-    author_last_name_label = Label(employee_frame, text="Author Last Name")
-    author_last_name_label.grid(row=1, column=0)
-    author_last_name_entry = Entry(employee_frame, textvariable=author_last_name)
-    author_last_name_entry.grid(row=1, column=1)
+    # check out button
+    check_out_button = Button(employee_frame, text="Check Out", command=check_out_book)
+    check_out_button.grid(row=5, column=0)
 
-    author_first_name_label = Label(employee_frame, text="Author First Name")
-    author_first_name_label.grid(row=2, column=0)
-    author_first_name_entry = Entry(employee_frame, textvariable=author_first_name)
-    author_first_name_entry.grid(row=2, column=1)
+    # return button
+    return_button = Button(employee_frame, text="Return", command=return_book)
+    return_button.grid(row=6, column=0)
+
+    # checkout and return entry labels
+    global checkout_and_return_label
+    checkout_and_return_label = Label(employee_frame)
+    checkout_and_return_label.grid(row=7, column=0)
+
+    # book details label and entry
+    book_name_label = Label(employee_frame, text="Book Name")
+    book_name_label.grid(row=7, column=0)
+    book_name_entry = Entry(employee_frame, textvariable=add_book_name)
+    book_name_entry.grid(row=7, column=1)
+
+    author_last_name_label = Label(employee_frame, text="Author Name")
+    author_last_name_label.grid(row=8, column=0)
+    author_last_name_entry = Entry(employee_frame, textvariable=add_book_author)
+    author_last_name_entry.grid(row=8, column=1)
+
+    # author_first_name_label = Label(employee_frame, text="Author First Name")
+    # author_first_name_label.grid(row=9, column=0)
+    # author_first_name_entry = Entry(employee_frame, textvariable=author_first_name)
+    # author_first_name_entry.grid(row=9, column=1)
 
     total_copies_label = Label(employee_frame, text="Total Copies")
-    total_copies_label.grid(row=3, column=0)
-    total_copies_entry = Entry(employee_frame, textvariable=total_copies)
-    total_copies_entry.grid(row=3, column=1)
+    total_copies_label.grid(row=9, column=0)
+    total_copies_entry = Entry(employee_frame, textvariable=add_total_copies)
+    total_copies_entry.grid(row=9, column=1)
 
     # add book button
     add_book_button = Button(employee_frame, text="Add book to stock", command=add_book)
-    add_book_button.grid(row=4, column=1)
+    add_book_button.grid(row=10, column=1)
 
     # employee details label and entry
     id_label = Label(employee_frame, text="ID")
-    id_label.grid(row=5, column=0)
+    id_label.grid(row=11, column=0)
     id_entry = Entry(employee_frame, textvariable=add_id)
-    id_entry.grid(row=5, column=1)
+    id_entry.grid(row=11, column=1)
     
     password_label = Label(employee_frame, text="Password")
-    password_label.grid(row=6, column=0)
+    password_label.grid(row=12, column=0)
     password_entry = Entry(employee_frame, textvariable=add_password)
-    password_entry.grid(row=6, column=1)
+    password_entry.grid(row=12, column=1)
 
     # add employee button
     add_employee_button = Button(employee_frame, text="Add employee to database", command=add_employee)
-    add_employee_button.grid(row=7, column=1)
+    add_employee_button.grid(row=13, column=1)
+
+    add_customer_button = Button(employee_frame, text="Add customer to database",  command=add_customer)
+    add_customer_button.grid(row=14, column=1)
 
     # add book and employee entry labels
     global add_book_and_employee_label
     add_book_and_employee_label = Label(employee_frame)
-    add_book_and_employee_label.grid(row=8, column=1)
+    add_book_and_employee_label.grid(row=15, column=1)
 
 def sign_in_menu():
     # initial frame
-    sign_in_frame = Frame(window, width=200, height=200, name="sign in")
+    sign_in_frame = Frame(window, width=400, height=200, name="sign in")
     sign_in_frame.grid(row=0, column=0)
 
     # id label and entry
@@ -194,6 +322,7 @@ def sign_in_menu():
 def validate_entry():
     curr_user_id = None
     curr_user_pass = None
+    global curr_user_status
     curr_user_status = None
     if not id.get().isnumeric():
         print("Invalid ID")
@@ -237,7 +366,6 @@ def validate_entry():
 #         csvFile = csv.reader(file)
 #         for line in csvFile:
 #             table.append(line)
-#     file.close()
 
 #     # Initialize the data frame
 #     data_frame = LabelFrame(window, text="items in our Library")
@@ -258,7 +386,6 @@ def validate_entry():
 #         csvFile = csv.reader(file)
 #         for line in csvFile:
 #             table.append(line)
-#     file.close()
 
 #     # Now table is the csv file in nested-list form
 #     # Update the table and do the write
@@ -266,7 +393,6 @@ def validate_entry():
 #     # with open('Library Inventory.csv', mode ='w', newline='') as file:
 #     #     writer = csv.writer(file)
 #     #     writer.writerows(table)
-#     # file.close()
 
 def check_out_book():
     inventory = []
@@ -309,9 +435,15 @@ def check_out_book():
         stock = csv.writer(items)
         stock.writerows(users_inventory)
 
+    global employee_frame
     global customer_frame
-    customer_frame.destroy()
-    customer_screen()
+    global curr_user_status
+    if curr_user_status == 'employee':
+        employee_frame.destroy()
+        employee_screen()
+    elif curr_user_status == 'customer':
+        customer_frame.destroy()
+        customer_screen()
 
 def return_book():
     inventory = []
@@ -336,7 +468,6 @@ def return_book():
     with open("Library Inventory.csv", mode="w", newline='') as items:
         stock = csv.writer(items)
         stock.writerows(inventory)
-    items.close()
 
 def add_book():
     inventory = []
@@ -344,16 +475,14 @@ def add_book():
         stock = csv.reader(items)
         for line in stock:
             inventory.append(line)
-    items.close()
 
-    inventory.append([book_name.get(), author_last_name.get(), author_first_name.get(), total_copies.get(), total_copies.get(), 0])
+    inventory.append([add_book_name.get(), add_book_author.get(), add_total_copies.get(), add_total_copies.get(), 0])
     print("Book added")
     add_book_and_employee_label.config(text="Book added")
 
     with open("Library Inventory.csv", mode="w", newline='') as items:
         stock = csv.writer(items)
         stock.writerows(inventory)
-    items.close()
 
 def add_employee():
     table = []
@@ -361,16 +490,29 @@ def add_employee():
         accounts = csv.reader(users)
         for line in accounts:
             table.append(line)
-    users.close()
 
-    table.append([id.get(), password.get(), "employee"])
+    table.append([add_id.get(), add_password.get(), "employee"])
     print("Employee added")
     add_book_and_employee_label.config(text="Employee added")
 
     with open("Users.csv", mode="w", newline='') as users:
         accounts = csv.writer(users)
         accounts.writerows(table)
-    users.close()
+
+def add_customer():
+    table = []
+    with open("Users.csv", mode="r", newline='') as users:
+        accounts = csv.reader(users)
+        for line in accounts:
+            table.append(line)
+
+    table.append([add_id.get(), add_password.get(), "customer"])
+    print("Customer added")
+    add_book_and_employee_label.config(text="Customer added")
+
+    with open("Users.csv", mode="w", newline='') as users:
+        accounts = csv.writer(users)
+        accounts.writerows(table)
 
 sign_in_menu()
 window.mainloop()
