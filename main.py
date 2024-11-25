@@ -28,7 +28,7 @@ def customer_screen():
     inventory = []
     late_fees = 0
     item_count = 0
-    with open(str(id.get()) + ' Customer Inventory Template.csv', mode='r') as file:
+    with open(str(id.get()) + ' Customer Inventory.csv', mode='r') as file:
         first_line = file.readline()
         categories = ''
         temp_array = []
