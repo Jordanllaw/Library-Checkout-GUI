@@ -18,9 +18,13 @@ author_last_name = StringVar(window)
 author_first_name = StringVar(window)
 total_copies = StringVar(window)
 
+# frames
+customer_frame = Frame(window, width=500, height=500)
+
 # modes
 def customer_screen():
     window.minsize(width=500, height=500)
+    global customer_frame
     customer_frame = Frame(window, width=500, height=500)
     customer_frame.grid(row=0, column=0)
 
@@ -86,7 +90,7 @@ def customer_screen():
 
     first_name_label = Label(input_frame, text="Fees Owed: $" + str(abs(late_fees)) + '0')
     first_name_label.grid(row=0, column=1)
-    last_name_label = Label(input_frame, text="(Late books: $0.20/day)")
+    last_name_label = Label(input_frame, text="(Late items: $0.20/day)")
     last_name_label.grid(row=1, column=1)
     last_name_label = Label(input_frame, text="(Late games: $0.30/day)")
     last_name_label.grid(row=2, column=1)
@@ -227,58 +231,55 @@ def validate_entry():
         print("No user found, ask an employee to create one")
         invalid_label.config(text="No user found,\nask an employee to\ncreate one")
 
-def read_data():
-    table = []
-    with open('Library Inventory.csv', mode ='r')as file:
-        csvFile = csv.reader(file)
-        for line in csvFile:
-            table.append(line)
-    file.close()
+# def read_data():
+#     table = []
+#     with open('Library Inventory.csv', mode ='r')as file:
+#         csvFile = csv.reader(file)
+#         for line in csvFile:
+#             table.append(line)
+#     file.close()
 
-    # Initialize the data frame
-    data_frame = LabelFrame(window, text="Books in our Library")
-    data_frame.grid(row=6, column=0)
+#     # Initialize the data frame
+#     data_frame = LabelFrame(window, text="items in our Library")
+#     data_frame.grid(row=6, column=0)
 
-    for widget in data_frame.winfo_children():
-        widget.destroy()
-    # Now table is the csv file in nested-list form
-    for row_num in range(len(table)):
-        for column_num in range(len(table[row_num])):
-            cell_value = table[row_num][column_num]
-            cell_label = Label(data_frame, text=cell_value)
-            cell_label.grid(row=row_num, column=column_num)
+#     for widget in data_frame.winfo_children():
+#         widget.destroy()
+#     # Now table is the csv file in nested-list form
+#     for row_num in range(len(table)):
+#         for column_num in range(len(table[row_num])):
+#             cell_value = table[row_num][column_num]
+#             cell_label = Label(data_frame, text=cell_value)
+#             cell_label.grid(row=row_num, column=column_num)
 
+# def write_data():
+#     table = []
+#     with open('Library Inventory.csv', mode ='r', newline='') as file:
+#         csvFile = csv.reader(file)
+#         for line in csvFile:
+#             table.append(line)
+#     file.close()
 
-def write_data():
-    table = []
-    with open('Library Inventory.csv', mode ='r', newline='') as file:
-        csvFile = csv.reader(file)
-        for line in csvFile:
-            table.append(line)
-    file.close()
-
-    # Now table is the csv file in nested-list form
-    # Update the table and do the write
-    # table.append([first_name_value.get(), last_name_value.get()])
-    # with open('Library Inventory.csv', mode ='w', newline='') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerows(table)
-    # file.close()
+#     # Now table is the csv file in nested-list form
+#     # Update the table and do the write
+#     # table.append([first_name_value.get(), last_name_value.get()])
+#     # with open('Library Inventory.csv', mode ='w', newline='') as file:
+#     #     writer = csv.writer(file)
+#     #     writer.writerows(table)
+#     # file.close()
 
 def check_out_book():
     inventory = []
-    with open("Library Inventory.csv", mode="r", newline='') as books:
-        stock = csv.reader(books)
+    with open("Library Inventory.csv", mode="r", newline='') as items:
+        stock = csv.reader(items)
         for line in stock:
             inventory.append(line)
-    books.close()
 
     users_inventory = []
-    with open("Customer Inventory.csv", mode="r", newline='') as books:
-        stock = csv.reader(books)
+    with open(f"{id.get()} Customer Inventory.csv", mode="r", newline='') as items:
+        stock = csv.reader(items)
         for line in stock:
             users_inventory.append(line)
-    books.close()
 
     for row in users_inventory:
         if row[0] == book_name.get() and row[1] == id.get():
@@ -288,9 +289,10 @@ def check_out_book():
 
     for row in inventory:
         if row[0] == book_name.get():
-            if int(row[4]) > 0:
-                row[4] = str(int(row[4]) - 1)
-                row[5] = str(int(row[5]) + 1)
+            if int(row[3]) > 0:
+                row[3] = str(int(row[3]) - 1)
+                row[4] = str(int(row[4]) + 1)
+                users_inventory.append([book_name.get(), '14', row[5]])
                 print("Book checked out successfully")
                 checkout_and_return_label.config(text="Book checked out successfully")
                 break
@@ -299,24 +301,30 @@ def check_out_book():
                 checkout_and_return_label.config(text="No copies available for checkout")
                 return
 
-    with open("Library Inventory.csv", mode="w", newline='') as books:
-        stock = csv.writer(books)
+    with open("Library Inventory.csv", mode="w", newline='') as items:
+        stock = csv.writer(items)
         stock.writerows(inventory)
-    books.close()
+
+    with open(f"{id.get()} Customer Inventory.csv", mode='w', newline='') as items:
+        stock = csv.writer(items)
+        stock.writerows(users_inventory)
+
+    global customer_frame
+    customer_frame.destroy()
+    customer_screen()
 
 def return_book():
     inventory = []
-    with open("Library Inventory.csv", mode="r", newline='') as books:
-        stock = csv.reader(books)
+    with open("Library Inventory.csv", mode="r", newline='') as items:
+        stock = csv.reader(items)
         for line in stock:
             inventory.append(line)
-    books.close()
 
     for row in inventory:
         if row[0] == book_name.get():
-            if int(row[5]) > 0:
-                row[4] = str(int(row[4]) + 1)
-                row[5] = str(int(row[5]) - 1)
+            if int(row[4]) > 0:
+                row[3] = str(int(row[3]) + 1)
+                row[4] = str(int(row[4]) - 1)
                 print("Book returned successfully")
                 checkout_and_return_label.config(text="Book returned successfully")
                 break
@@ -325,27 +333,27 @@ def return_book():
                 checkout_and_return_label.config(text="No copies of this book are currently checked out")
                 return
 
-    with open("Library Inventory.csv", mode="w", newline='') as books:
-        stock = csv.writer(books)
+    with open("Library Inventory.csv", mode="w", newline='') as items:
+        stock = csv.writer(items)
         stock.writerows(inventory)
-    books.close()
+    items.close()
 
 def add_book():
     inventory = []
-    with open("Library Inventory.csv", mode="r", newline='') as books:
-        stock = csv.reader(books)
+    with open("Library Inventory.csv", mode="r", newline='') as items:
+        stock = csv.reader(items)
         for line in stock:
             inventory.append(line)
-    books.close()
+    items.close()
 
     inventory.append([book_name.get(), author_last_name.get(), author_first_name.get(), total_copies.get(), total_copies.get(), 0])
     print("Book added")
     add_book_and_employee_label.config(text="Book added")
 
-    with open("Library Inventory.csv", mode="w", newline='') as books:
-        stock = csv.writer(books)
+    with open("Library Inventory.csv", mode="w", newline='') as items:
+        stock = csv.writer(items)
         stock.writerows(inventory)
-    books.close()
+    items.close()
 
 def add_employee():
     table = []
