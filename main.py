@@ -12,8 +12,8 @@ id = StringVar(window)
 
 add_password = StringVar(window) 
 add_id = StringVar(window)
-add_book_name = StringVar(window)
-add_book_author = StringVar(window)
+add_item_name = StringVar(window)
+add_item_creator = StringVar(window)
 add_total_copies = StringVar(window)
 
 book_name = StringVar(window)
@@ -22,14 +22,14 @@ book_name = StringVar(window)
 # total_copies = StringVar(window)
 
 # frames
-customer_frame = Frame(window, width=1000, height=1000)
-employee_frame = Frame(window, width=1000, height=1000)
+customer_frame = Frame(window, width=1200, height=700)
+employee_frame = Frame(window, width=1200, height=700)
 
 # modes
 def customer_screen():
-    window.minsize(width=1000, height=1000)
+    window.minsize(width=1200, height=700)
     global customer_frame
-    customer_frame = Frame(window, width=1000, height=1000)
+    customer_frame = Frame(window, width=1200, height=700)
     customer_frame.grid(row=0, column=0)
 
     # user inventory
@@ -84,7 +84,7 @@ def customer_screen():
             library_inventory.append(line)
 
     data_frame2 = LabelFrame(customer_frame, text="Current Library Inventory")
-    data_frame2.grid(row=7, column=2)
+    data_frame2.grid(row=0, column=2, rowspan=10, columnspan=10)
 
     for widget in data_frame2.winfo_children():
         widget.destroy()
@@ -136,9 +136,9 @@ def customer_screen():
     checkout_and_return_label.grid(row=7, column=0)
 
 def employee_screen():
-    window.minsize(width=1000, height=1000)
+    window.minsize(width=1200, height=700)
     global employee_frame
-    employee_frame = Frame(window, width=1000, height=1000)
+    employee_frame = Frame(window, width=1200, height=700)
     employee_frame.grid(row=0, column=0)
 
     # user inventory
@@ -178,6 +178,7 @@ def employee_screen():
 
     for widget in data_frame.winfo_children():
         widget.destroy()
+    
     # Now table is the csv file in nested-list form
     for r in range(len(inventory)):
         for c in range(len(inventory[r])):
@@ -192,8 +193,8 @@ def employee_screen():
         for line in csv_file:
             library_inventory.append(line)
 
-    data_frame2 = LabelFrame(customer_frame, text="Current Library Inventory")
-    data_frame2.grid(row=7, column=2)
+    data_frame2 = LabelFrame(employee_frame, text="Current Library Inventory")
+    data_frame2.grid(row=0, column=2, rowspan=10, columnspan=10)
 
     for widget in data_frame2.winfo_children():
         widget.destroy()
@@ -245,14 +246,14 @@ def employee_screen():
     checkout_and_return_label.grid(row=7, column=0)
 
     # book details label and entry
-    book_name_label = Label(employee_frame, text="Book Name")
+    book_name_label = Label(employee_frame, text="Item Name")
     book_name_label.grid(row=7, column=0)
-    book_name_entry = Entry(employee_frame, textvariable=add_book_name)
+    book_name_entry = Entry(employee_frame, textvariable=add_item_name)
     book_name_entry.grid(row=7, column=1)
 
-    author_last_name_label = Label(employee_frame, text="Author Name")
+    author_last_name_label = Label(employee_frame, text="Item Creating")
     author_last_name_label.grid(row=8, column=0)
-    author_last_name_entry = Entry(employee_frame, textvariable=add_book_author)
+    author_last_name_entry = Entry(employee_frame, textvariable=add_item_creator)
     author_last_name_entry.grid(row=8, column=1)
 
     # author_first_name_label = Label(employee_frame, text="Author First Name")
@@ -269,28 +270,32 @@ def employee_screen():
     add_book_button = Button(employee_frame, text="Add book to stock", command=add_book)
     add_book_button.grid(row=10, column=1)
 
+    # add game button
+    add_game_button = Button(employee_frame, text="Add game to stock", command=add_game)
+    add_game_button.grid(row=11, column=1)
+
     # employee details label and entry
     id_label = Label(employee_frame, text="ID")
-    id_label.grid(row=11, column=0)
+    id_label.grid(row=12, column=0)
     id_entry = Entry(employee_frame, textvariable=add_id)
-    id_entry.grid(row=11, column=1)
+    id_entry.grid(row=12, column=1)
     
     password_label = Label(employee_frame, text="Password")
-    password_label.grid(row=12, column=0)
+    password_label.grid(row=13, column=0)
     password_entry = Entry(employee_frame, textvariable=add_password)
-    password_entry.grid(row=12, column=1)
+    password_entry.grid(row=13, column=1)
 
     # add employee button
     add_employee_button = Button(employee_frame, text="Add employee to database", command=add_employee)
-    add_employee_button.grid(row=13, column=1)
+    add_employee_button.grid(row=14, column=1)
 
     add_customer_button = Button(employee_frame, text="Add customer to database",  command=add_customer)
-    add_customer_button.grid(row=14, column=1)
+    add_customer_button.grid(row=15, column=1)
 
     # add book and employee entry labels
     global add_book_and_employee_label
     add_book_and_employee_label = Label(employee_frame)
-    add_book_and_employee_label.grid(row=15, column=1)
+    add_book_and_employee_label.grid(row=16, column=1)
 
 def sign_in_menu():
     # initial frame
@@ -452,13 +457,23 @@ def return_book():
         for line in stock:
             inventory.append(line)
 
+    customer_inventory = []
+    customer_items = []
+    with open(f"{id.get()} Customer Inventory.csv", mode='r', newline='') as items:
+        stock = csv.reader(items)
+        for line in stock:
+            customer_inventory.append(line)
+            customer_items.append(line[0])
+
     for row in inventory:
-        if row[0] == book_name.get():
+        if row[0] == book_name.get() and row[0] in customer_items:
             if int(row[4]) > 0:
                 row[3] = str(int(row[3]) + 1)
                 row[4] = str(int(row[4]) - 1)
                 print("Book returned successfully")
                 checkout_and_return_label.config(text="Book returned successfully")
+                i = customer_items.index(row[0])
+                customer_inventory.pop(i)
                 break
             else:
                 print("No copies of this book are currently checked out")
@@ -469,6 +484,21 @@ def return_book():
         stock = csv.writer(items)
         stock.writerows(inventory)
 
+    with open(f"{id.get()} Customer Inventory.csv", mode='w', newline='') as items:
+        stock = csv.writer(items)
+        stock.writerows(customer_inventory)
+
+    global employee_frame
+    global customer_frame
+    global curr_user_status
+    if curr_user_status == 'employee':
+        employee_frame.destroy()
+        employee_screen()
+    elif curr_user_status == 'customer':
+        customer_frame.destroy()
+        customer_screen()
+
+
 def add_book():
     inventory = []
     with open("Library Inventory.csv", mode="r", newline='') as items:
@@ -476,13 +506,40 @@ def add_book():
         for line in stock:
             inventory.append(line)
 
-    inventory.append([add_book_name.get(), add_book_author.get(), add_total_copies.get(), add_total_copies.get(), 0])
+    inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Book'])
     print("Book added")
     add_book_and_employee_label.config(text="Book added")
 
     with open("Library Inventory.csv", mode="w", newline='') as items:
         stock = csv.writer(items)
         stock.writerows(inventory)
+    
+    global employee_frame
+    global customer_frame
+    global curr_user_status
+    employee_frame.destroy()
+    employee_screen()
+
+def add_game():
+    inventory = []
+    with open("Library Inventory.csv", mode="r", newline='') as items:
+        stock = csv.reader(items)
+        for line in stock:
+            inventory.append(line)
+
+    inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Game'])
+    print("Game added")
+    add_book_and_employee_label.config(text="Game added")
+
+    with open("Library Inventory.csv", mode="w", newline='') as items:
+        stock = csv.writer(items)
+        stock.writerows(inventory)
+    
+    global employee_frame
+    global customer_frame
+    global curr_user_status
+    employee_frame.destroy()
+    employee_screen()
 
 def add_employee():
     table = []
@@ -499,6 +556,12 @@ def add_employee():
         accounts = csv.writer(users)
         accounts.writerows(table)
 
+    global employee_frame
+    global customer_frame
+    global curr_user_status
+    employee_frame.destroy()
+    employee_screen()
+
 def add_customer():
     table = []
     with open("Users.csv", mode="r", newline='') as users:
@@ -513,6 +576,12 @@ def add_customer():
     with open("Users.csv", mode="w", newline='') as users:
         accounts = csv.writer(users)
         accounts.writerows(table)
+
+    global employee_frame
+    global customer_frame
+    global curr_user_status
+    employee_frame.destroy()
+    employee_screen()
 
 sign_in_menu()
 window.mainloop()
