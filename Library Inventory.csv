@@ -1,4 +1,4 @@
-Book Title,Author/Company,Total Copies,Copies Available,Copies Checked Out,Item Type
+Title,Author/Company,Total Copies,Copies Available,Copies Checked Out,Item Type
 A Storm of Swords,George R. R. Martin,2,2,0,Book
 A Feast of Crows,George R. R. Martin,2,2,0,Book
 A Dance of Dragons,George R. R. Martin,2,2,0,Book
@@ -19,4 +19,4 @@ Mockingjay,Suzanne Collins,2,1,1,Book
 A Good Girl's Guide to Murder,Holly Jackson,2,2,0,Book
 The Legend of Zelda: Tears of the Kingdom,Nintendo,3,3,0,Game
 The Legend of Zelda: Breath of the Wild,Nintendo,3,2,1,Game
-Babel,R. F. Kuang,3,3,0,book
+Babel,R. F. Kuang,3,3,0,Book

@@ -556,6 +556,9 @@ def add_employee():
         accounts = csv.writer(users)
         accounts.writerows(table)
 
+    with open(f"{id.get()} Customer Inventory.csv", mode='w', newline='') as inventory:
+        inventory.write("Item Name,Days Until Due,Type")
+
     global employee_frame
     global customer_frame
     global curr_user_status
@@ -576,6 +579,9 @@ def add_customer():
     with open("Users.csv", mode="w", newline='') as users:
         accounts = csv.writer(users)
         accounts.writerows(table)
+
+    with open(f"{id.get()} Customer Inventory.csv", mode='w', newline='') as inventory:
+        inventory.write("Item Name,Days Until Due,Type")
 
     global employee_frame
     global customer_frame
