@@ -16,7 +16,9 @@ add_item_name = StringVar(window)
 add_item_creator = StringVar(window)
 add_total_copies = StringVar(window)
 
-book_name = StringVar(window)
+item_name = StringVar(window)
+add_item_and_user_text = ''
+checkout_and_return_text = ''
 # author_last_name = StringVar(window)
 # author_first_name = StringVar(window)
 # total_copies = StringVar(window)
@@ -119,7 +121,7 @@ def customer_screen():
     # book name label and entry
     book_name_label = Label(customer_frame, text="Book Name")
     book_name_label.grid(row=3, column=0)
-    book_name_entry = Entry(customer_frame, textvariable=book_name)
+    book_name_entry = Entry(customer_frame, textvariable=item_name)
     book_name_entry.grid(row=4, column=0)
 
     # check out button
@@ -127,12 +129,13 @@ def customer_screen():
     check_out_button.grid(row=5, column=0)
 
     # return button
-    return_button = Button(customer_frame, text="Return", command=return_book)
+    return_button = Button(customer_frame, text="Return", command=return_item)
     return_button.grid(row=6, column=0)
 
     # checkout and return entry labels
     global checkout_and_return_label
-    checkout_and_return_label = Label(customer_frame)
+    global checkout_and_return_text
+    checkout_and_return_label = Label(customer_frame, checkout_and_return_text)
     checkout_and_return_label.grid(row=7, column=0)
 
 def employee_screen():
@@ -229,7 +232,7 @@ def employee_screen():
     # book name label and entry
     book_name_label = Label(employee_frame, text="Book Name")
     book_name_label.grid(row=3, column=0)
-    book_name_entry = Entry(employee_frame, textvariable=book_name)
+    book_name_entry = Entry(employee_frame, textvariable=item_name)
     book_name_entry.grid(row=4, column=0)
 
     # check out button
@@ -237,12 +240,13 @@ def employee_screen():
     check_out_button.grid(row=5, column=0)
 
     # return button
-    return_button = Button(employee_frame, text="Return", command=return_book)
+    return_button = Button(employee_frame, text="Return", command=return_item)
     return_button.grid(row=6, column=0)
 
     # checkout and return entry labels
     global checkout_and_return_label
-    checkout_and_return_label = Label(employee_frame)
+    global checkout_and_return_text
+    checkout_and_return_label = Label(employee_frame, text=checkout_and_return_text)
     checkout_and_return_label.grid(row=7, column=0)
 
     # book details label and entry
@@ -255,11 +259,6 @@ def employee_screen():
     author_last_name_label.grid(row=9, column=0)
     author_last_name_entry = Entry(employee_frame, textvariable=add_item_creator)
     author_last_name_entry.grid(row=9, column=1)
-
-    # author_first_name_label = Label(employee_frame, text="Author First Name")
-    # author_first_name_label.grid(row=9, column=0)
-    # author_first_name_entry = Entry(employee_frame, textvariable=author_first_name)
-    # author_first_name_entry.grid(row=9, column=1)
 
     total_copies_label = Label(employee_frame, text="Total Copies")
     total_copies_label.grid(row=10, column=0)
@@ -293,9 +292,10 @@ def employee_screen():
     add_customer_button.grid(row=16, column=1)
 
     # add book and employee entry labels
-    global add_book_and_employee_label
-    add_book_and_employee_label = Label(employee_frame)
-    add_book_and_employee_label.grid(row=17, column=1)
+    global add_item_and_user_label
+    global add_item_and_user_text
+    add_item_and_user_label = Label(employee_frame, text=add_item_and_user_text)
+    add_item_and_user_label.grid(row=17, column=1)
 
 def sign_in_menu():
     # initial frame
@@ -400,6 +400,7 @@ def validate_entry():
 #     #     writer.writerows(table)
 
 def check_out_book():
+    global checkout_and_return_text
     inventory = []
     with open("Library Inventory.csv", mode="r", newline='') as items:
         stock = csv.reader(items)
@@ -413,34 +414,34 @@ def check_out_book():
             users_inventory.append(line)
 
     for row in users_inventory:
-        if row[0] == book_name.get():
+        if row[0] == item_name.get():
             print("You already have this book checked out")
-            checkout_and_return_label.config(text="You already have this book checked out")
+            checkout_and_return_text = "You already have this book checked out"
             return
         
-    if book_name.get() != "": 
+    if item_name.get() != "": 
         found = False
         for row in inventory:
-            if row[0] == book_name.get():
+            if row[0] == item_name.get():
                 found = True
                 if int(row[3]) > 0:
                     row[3] = str(int(row[3]) - 1)
                     row[4] = str(int(row[4]) + 1)
-                    users_inventory.append([book_name.get(), '14', row[5]])
-                    print("Book checked out successfully")
-                    checkout_and_return_label.config(text="Book checked out successfully")
+                    users_inventory.append([item_name.get(), '14', row[5]])
+                    print("Item checked out successfully")
+                    checkout_and_return_text = "Item checked out successfully"
                     break
                 else:
                     print("No copies available for checkout")
-                    checkout_and_return_label.config(text="No copies available for checkout")
+                    checkout_and_return_text = "No copies available for checkout"
                     return
         if not found:
-            print("Invalid input! Please enter a book from the inventory")
-            checkout_and_return_label.config(text="Invalid input! Please enter a book from the inventory")
+            print("Invalid input! Please enter an item from the inventory")
+            checkout_and_return_text = "Invalid input! Please enter an item from inventory"
             return
     else: 
-        print("Please enter a book name")
-        checkout_and_return_label.config(text="Please enter a book name")
+        print("Please enter the name of an item")
+        checkout_and_return_text = "Please enter the name of an item"
         return
                    
 #    for row in inventory:
@@ -475,7 +476,8 @@ def check_out_book():
         customer_frame.destroy()
         customer_screen()
 
-def return_book():
+def return_item():
+    global checkout_and_return_text
     inventory = []
     with open("Library Inventory.csv", mode="r", newline='') as items:
         stock = csv.reader(items)
@@ -496,31 +498,30 @@ def return_book():
 #            checkout_and_return_label.config(text="No copies to be returned")
 #            return
 
-    if book_name.get() != "":
+    if item_name.get() != "":
         found = False
         for row in inventory: 
-            if row[0] == book_name.get(): 
+            if row[0] == item_name.get(): 
                 found = True
                 if row[0] in customer_items:
                     if int(row[4]) > 0:
                         row[3] = str(int(row[3]) + 1)
                         row[4] = str(int(row[4]) - 1)
-                        print("Book returned successfully")
-                        checkout_and_return_label.config(text="Book returned successfully")
+                        print("Item returned successfully")
+                        checkout_and_return_text = "Item return successfully"
                         i = customer_items.index(row[0])
                         customer_inventory.pop(i)
                         break
                 else: 
                     print("No copies to be returned")
-                    checkout_and_return_label.config(text="No copies to be returned")
+                    checkout_and_return_text = "No copies to be returned"
                     return
         if not found:
-            print("Invalid input! Please enter a book from the inventory")
-            checkout_and_return_label.config(text="Invalid input! Please enter a book from the inventory")
-            return
+            print("Invalid input! Please enter an item from the inventory")
+            checkout_and_return_text = "Invalid input! Please enter an item from the inventory"
     else: 
-        print("Please enter a book name")
-        checkout_and_return_label.config(text="Please enter a book name")
+        print("Please enter the name of an item")
+        checkout_and_return_text = "Please enter the name of an item"
         return
     
 #    for row in inventory: 
@@ -557,6 +558,7 @@ def return_book():
         customer_screen()
 
 def add_book():
+    global add_item_and_user_text
     inventory = []
     with open("Library Inventory.csv", mode="r", newline='') as items:
         stock = csv.reader(items)
@@ -567,13 +569,13 @@ def add_book():
         if add_total_copies.get().isnumeric() and int(add_total_copies.get()) > 0: 
             inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Book'])
             print("Book added")
-            add_book_and_employee_label.config(text="Book added")
+            add_item_and_user_text = "Book added"
         else: 
             print("Invalid number of copies")
-            add_book_and_employee_label.config(text="Invalid number of copies")
+            add_item_and_user_text = "Invalid number of copies"
     else:
         print("Please fill in the missing information")
-        add_book_and_employee_label.config(text="Please fill in the missing information")
+        add_item_and_user_text = "Please fill in the missing information"
 
 #    inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Book'])
 #    print("Book added")
@@ -590,6 +592,7 @@ def add_book():
     employee_screen()
 
 def add_game():
+    global add_item_and_user_text
     inventory = []
     with open("Library Inventory.csv", mode="r", newline='') as items:
         stock = csv.reader(items)
@@ -600,13 +603,13 @@ def add_game():
         if add_total_copies.get().isnumeric() and int(add_total_copies.get()) > 0: 
             inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Game'])
             print("Game added")
-            add_book_and_employee_label.config(text="Game added")
+            add_item_and_user_text = "Game added"
         else: 
             print("Invalid number of copies")
-            add_book_and_employee_label.config(text="Invalid number of copies")
+            add_item_and_user_text = "Invalid number of copies"
     else:
         print("Please fill in the missing information")
-        add_book_and_employee_label.config(text="Please fill in the missing information")
+        add_item_and_user_text = "Please fill in the missing information"
 
 #    inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Game'])
 #    print("Game added")
@@ -623,6 +626,7 @@ def add_game():
     employee_screen()
 
 def add_employee():
+    global add_item_and_user_text
     table = []
     with open("Users.csv", mode="r", newline='') as users:
         accounts = csv.reader(users)
@@ -633,13 +637,13 @@ def add_employee():
         if add_id.get().isnumeric():
             table.append([add_id.get(), add_password.get(), "employee"])
             print("Employee added")
-            add_book_and_employee_label.config(text="Employee added")
+            add_item_and_user_text = "Employee Added"
         else: 
             print("Invalid ID. Please enter a number ID")
-            add_book_and_employee_label.config(text="Invalid ID. Please enter a number ID")
+            add_item_and_user_text = "Invalid ID. Please enter a number ID"
     else:
         print("Please fill in the missing information")
-        add_book_and_employee_label.config(text="Please fill in the missing information")
+        add_item_and_user_text = "Please fill in the missing information"
 
 #    table.append([add_id.get(), add_password.get(), "employee"])
 #    print("Employee added")
@@ -659,6 +663,7 @@ def add_employee():
     employee_screen()
 
 def add_customer():
+    global add_item_and_user_text
     table = []
     with open("Users.csv", mode="r", newline='') as users:
         accounts = csv.reader(users)
@@ -669,13 +674,13 @@ def add_customer():
         if add_id.get().isnumeric():
             table.append([add_id.get(), add_password.get(), "customer"])
             print("Customer added")
-            add_book_and_employee_label.config(text="Customer added")
+            add_item_and_user_text = "Customer added"
         else: 
             print("Invalid ID. Please enter a number ID")
-            add_book_and_employee_label.config(text="Invalid ID. Please enter a number ID")
+            add_item_and_user_text = "Invalid ID. Please enter a number ID"
     else:
         print("Please fill in the missing information")
-        add_book_and_employee_label.config(text="Please fill in the missing information")
+        add_item_and_user_text = "Please fill in the missing information"
 
 #    table.append([add_id.get(), add_password.get(), "customer"])
 #    print("Customer added")
