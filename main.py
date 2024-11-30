@@ -519,9 +519,18 @@ def add_book():
 
     if add_item_name.get() and add_item_creator.get() and add_total_copies.get() != "":
         if add_total_copies.get().isnumeric() and int(add_total_copies.get()) > 0: 
-            inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Book'])
-            print("Book added")
-            add_item_and_user_text = "Book added"
+            item_exists = False
+            for row in inventory:
+                if row[0] == add_item_name.get() and row[1] == add_item_creator.get():
+                    row[2] = str(int(row[2]) + int(add_total_copies.get()))
+                    item_exists = True
+                    print("Updated the number of copies")
+                    add_item_and_user_text = "Updated the number of copies"
+                    break
+            if not item_exists: 
+                inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Book'])
+                print("Book added")
+                add_item_and_user_text = "Book added"
         else: 
             print("Invalid number of copies")
             add_item_and_user_text = "Invalid number of copies"
@@ -549,9 +558,18 @@ def add_game():
 
     if add_item_name.get() and add_item_creator.get() and add_total_copies.get() != "":
         if add_total_copies.get().isnumeric() and int(add_total_copies.get()) > 0: 
-            inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Game'])
-            print("Game added")
-            add_item_and_user_text = "Game added"
+            item_exists = False
+            for row in inventory:
+                if row[0] == add_item_name.get() and row[1] == add_item_creator.get():
+                    row[2] = str(int(row[2]) + int(add_total_copies.get()))
+                    item_exists = True
+                    print("Updated the number of copies")
+                    add_item_and_user_text = "Updated the number of copies"
+                    break
+            if not item_exists:
+                inventory.append([add_item_name.get(), add_item_creator.get(), add_total_copies.get(), add_total_copies.get(), 0, 'Game'])
+                print("Game added")
+                add_item_and_user_text = "Game added"
         else: 
             print("Invalid number of copies")
             add_item_and_user_text = "Invalid number of copies"
@@ -579,9 +597,18 @@ def add_employee():
 
     if add_id.get() and add_password.get() != "":
         if add_id.get().isnumeric():
-            table.append([add_id.get(), add_password.get(), "employee"])
-            print("Employee added")
-            add_item_and_user_text = "Employee Added"
+            id_taken = False
+            for row in table: 
+                if row[0] == add_id.get(): 
+                    id_taken = True
+                    break
+            if not id_taken: 
+                table.append([add_id.get(), add_password.get(), "employee"])
+                print("Employee added")
+                add_item_and_user_text = "Employee Added"
+            else:
+                print("ID already taken")
+                add_item_and_user_text = "ID already taken"
         else: 
             print("Invalid ID. Please enter a number ID")
             add_item_and_user_text = "Invalid ID. Please enter a number ID"
@@ -593,7 +620,7 @@ def add_employee():
         accounts = csv.writer(users)
         accounts.writerows(table)
 
-    with open(f"{id.get()} Customer Inventory.csv", mode='w', newline='') as inventory:
+    with open(f"{add_id.get()} Customer Inventory.csv", mode='w', newline='') as inventory:
         inventory.write("Item Name,Days Until Due,Type")
 
     global employee_frame
@@ -612,9 +639,18 @@ def add_customer():
     
     if add_id.get() and add_password.get() != "":
         if add_id.get().isnumeric():
-            table.append([add_id.get(), add_password.get(), "customer"])
-            print("Customer added")
-            add_item_and_user_text = "Customer added"
+            id_taken = False
+            for row in table: 
+                if row[0] == add_id.get():
+                    id_taken = True
+                    break
+            if not id_taken:
+                table.append([add_id.get(), add_password.get(), "customer"])
+                print("Customer added")
+                add_item_and_user_text = "Customer added"
+            else:
+                print("ID already taken")
+                add_item_and_user_text = "ID already taken"
         else: 
             print("Invalid ID. Please enter a number ID")
             add_item_and_user_text = "Invalid ID. Please enter a number ID"
@@ -626,7 +662,7 @@ def add_customer():
         accounts = csv.writer(users)
         accounts.writerows(table)
 
-    with open(f"{id.get()} Customer Inventory.csv", mode='w', newline='') as inventory:
+    with open(f"{add_id.get()} Customer Inventory.csv", mode='w', newline='') as inventory:
         inventory.write("Item Name,Days Until Due,Type")
 
     global employee_frame
