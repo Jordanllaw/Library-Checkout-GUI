@@ -1,15 +1,20 @@
 from tkinter import *
 import csv
+from tkinter import font
 
 # base window
 window = Tk()
 window.title("Start Menu")
-window.geometry('200x200')
+window.geometry('300x200')
+
+# initial log in window --------------------------------------------------------
 
 # variables
 password = StringVar(window)
 id = StringVar(window)
+default_font = font.nametofont('TkTextFont')  # default font for tkinter -> this is a dict
 
+# text inputs
 add_password = StringVar(window) 
 add_id = StringVar(window)
 add_item_name = StringVar(window)
@@ -20,18 +25,19 @@ item_name = StringVar(window)
 add_item_and_user_text = ''
 checkout_and_return_text = ''
 
+
 # frames
-customer_frame = Frame(window, width=1200, height=700)
-employee_frame = Frame(window, width=1200, height=700)
+customer_frame = Frame(window, width=1400, height=700)
+employee_frame = Frame(window, width=1400, height=700)
 
-# modes
+# customer screen --------------------------------------------------------------
 def customer_screen():
-    window.minsize(width=1200, height=700)
+    window.minsize(width=1370, height=620)
     global customer_frame
-    customer_frame = Frame(window, width=1200, height=700)
-    customer_frame.grid(row=0, column=0)
+    customer_frame = Frame(window, width=1400, height=700)
+    customer_frame.grid(row=0, column=0, padx=10, pady=10)
 
-    # user inventory
+    # user inventory -----------------------------------------------------------
     inventory = []
     late_fees = 0
     item_count = 0
@@ -62,9 +68,9 @@ def customer_screen():
             inventory.append(line)
             item_count += 1
 
-    # Initialize the data frame
-    data_frame = LabelFrame(customer_frame, text="Currently Checked Out")
-    data_frame.grid(row=7, column=1)
+    # Initialize the data frame ------------------------------------------------
+    data_frame = LabelFrame(customer_frame, text="Currently Checked Out", font=(default_font["family"],default_font["size"] + 6))
+    data_frame.grid(row=4, column=0, padx=10, pady=10, columnspan=2)
 
     for widget in data_frame.winfo_children():
         widget.destroy()
@@ -72,17 +78,20 @@ def customer_screen():
     for r in range(len(inventory)):
         for c in range(len(inventory[r])):
             cell_value = inventory[r][c]
-            cell_label = Label(data_frame, text=cell_value)
-            cell_label.grid(row=r, column=c)
+            if r == 0:
+                cell_label = Label(data_frame, text=cell_value, font=(default_font["family"],default_font["size"] + 2, "underline"))
+            else:
+                cell_label = Label(data_frame, text=cell_value)
+            cell_label.grid(row=r, column=c, padx=5, pady=5)
 
-    # library inventory
+    # library inventory --------------------------------------------------------
     library_inventory = []
     with open("Library Inventory.csv", mode="r") as file:
         csv_file = csv.reader(file)
         for line in csv_file:
             library_inventory.append(line)
 
-    data_frame2 = LabelFrame(customer_frame, text="Current Library Inventory")
+    data_frame2 = LabelFrame(customer_frame, text="Current Library Inventory", font=(default_font["family"],default_font["size"] + 6))
     data_frame2.grid(row=0, column=2, rowspan=10, columnspan=10)
 
     for widget in data_frame2.winfo_children():
@@ -90,60 +99,58 @@ def customer_screen():
     for r in range(len(library_inventory)):
         for c in range(len(library_inventory[r])):
             cell_value = library_inventory[r][c]
-            cell_label = Label(data_frame2, text=cell_value)
+            if r == 0:
+                cell_label = Label(data_frame2, text=cell_value, font=(default_font["family"],default_font["size"] + 2, "underline"))
+            else:
+                cell_label = Label(data_frame2, text=cell_value)
             cell_label.grid(row=r, column=c)
 
-    # main checked out items
-    input_frame = LabelFrame(customer_frame, text="Information")
-    input_frame.grid(row=0, column=0)
+    # welcome text -------------------------------------------------------------
+    input_frame = Frame(customer_frame, width=300, height=300)
+    input_frame.grid(row=0, column=0, padx=10, pady=10)
+    Label(input_frame, text="Welcome Back Customer " + str(id.get()) + "!", font=(default_font["family"],default_font["size"] + 10)).grid(row=0, column=0, columnspan=2, pady=20)
 
-    last_name_label = Label(input_frame, text="ID: " + id.get())
-    last_name_label.grid(row=0, column=0)
-    last_name_label = Label(input_frame, text="Total Items: " + str(item_count))
+    Label(input_frame, text="Total Items: " + str(item_count), font=(default_font["family"],default_font["size"] + 2)).grid(row=1, column=0, padx=15)
+
+    # late fees ----------------------------------------------------------------
+    # input_frame = Frame(customer_frame).grid(row=1, column=1)
+
+    first_name_label = Label(input_frame, text="Fees Owed: $" + str(abs(late_fees)) + '0', padx=60, font=(default_font["family"],default_font["size"] + 2))
+    first_name_label.grid(row=2, column=0)
+    last_name_label = Label(input_frame, text="(Late books: $0.20/day)", padx=15)
     last_name_label.grid(row=3, column=0)
-
-    # late fees
-    input_frame = LabelFrame(customer_frame, text="Late Fees")
-    input_frame.grid(row=0, column=1)
-
-    first_name_label = Label(input_frame, text="Fees Owed: $" + str(abs(late_fees)) + '0')
-    first_name_label.grid(row=0, column=1)
-    last_name_label = Label(input_frame, text="(Late items: $0.20/day)")
-    last_name_label.grid(row=1, column=1)
     last_name_label = Label(input_frame, text="(Late games: $0.30/day)")
-    last_name_label.grid(row=2, column=1)
+    last_name_label.grid(row=4, column=0)
 
-    # book name label and entry
-    book_name_label = Label(customer_frame, text="Book Name")
-    book_name_label.grid(row=3, column=0)
-    book_name_entry = Entry(customer_frame, textvariable=item_name)
-    book_name_entry.grid(row=4, column=0)
+    # book name label and entry ------------------------------------------------
+
+    Label(input_frame, text="Book Name").grid(row=1, column=1, padx=15)
+    Entry(input_frame, textvariable=item_name).grid(row=2, column=1, padx=15)
 
     # check out button
-    check_out_button = Button(customer_frame, text="Check Out", command=check_out_book)
-    check_out_button.grid(row=5, column=0)
+    Button(input_frame, text="Check Out", command=check_out_book).grid(row=3, column=1, padx=15)
 
     # return button
-    return_button = Button(customer_frame, text="Return", command=return_item)
-    return_button.grid(row=6, column=0)
+    Button(input_frame, text="Return", command=return_item).grid(row=4, column=1, padx=15)
 
-    # checkout and return entry labels
-    global checkout_and_return_label
-    global checkout_and_return_text
-    checkout_and_return_label = Label(customer_frame, checkout_and_return_text)
-    checkout_and_return_label.grid(row=7, column=0)
+    # checkout and return entry labels -----------------------------------------
+    # global checkout_and_return_label
+    # global checkout_and_return_text
+    # checkout_and_return_label = Label(customer_frame, text=checkout_and_return_text)
+    # checkout_and_return_label.grid(row=7, column=0)
 
+# employee screen ---------------------------------------------------------------
 def employee_screen():
-    window.minsize(width=1200, height=700)
+    window.minsize(width=1370, height=620)
     global employee_frame
-    employee_frame = Frame(window, width=1200, height=700)
-    employee_frame.grid(row=0, column=0)
+    employee_frame = Frame(window, width=1400, height=700)
+    employee_frame.grid(row=0, column=0, padx=10, pady=10)
 
     # user inventory
     inventory = []
     late_fees = 0
     item_count = 0
-    with open(str(id.get()) + ' Customer Inventory.csv', mode='r') as file:
+    with open(str(1892383471219) + ' Customer Inventory.csv', mode='r') as file:
         first_line = file.readline()
         categories = ''
         temp_array = []
@@ -293,7 +300,7 @@ def employee_screen():
 def sign_in_menu():
     # initial frame
     sign_in_frame = Frame(window, width=400, height=200, name="sign in")
-    sign_in_frame.grid(row=0, column=0)
+    sign_in_frame.grid(row=0, column=0, padx=10, pady=10)
 
     # id label and entry
     id_label = Label(sign_in_frame, text="ID")
@@ -607,5 +614,6 @@ def add_customer():
     employee_frame.destroy()
     employee_screen()
 
-sign_in_menu()
+# sign_in_menu()
+employee_screen()
 window.mainloop()
