@@ -238,7 +238,7 @@ def employee_screen():
     # checkout and return entry labels
     global checkout_and_return_label
     global checkout_and_return_text
-    checkout_and_return_label = Label(employee_frame, text=checkout_and_return_text)
+    checkout_and_return_label = Label(input_frame, text=checkout_and_return_text)
     checkout_and_return_label.grid(row=7, column=0)
 
     # spacer
@@ -523,6 +523,7 @@ def add_book():
             for row in inventory:
                 if row[0] == add_item_name.get() and row[1] == add_item_creator.get():
                     row[2] = str(int(row[2]) + int(add_total_copies.get()))
+                    row[3] = str(int(row[3]) + int(add_total_copies.get()))
                     item_exists = True
                     print("Updated the number of copies")
                     add_item_and_user_text = "Updated the number of copies"
